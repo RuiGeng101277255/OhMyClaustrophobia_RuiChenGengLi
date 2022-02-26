@@ -29,6 +29,9 @@ public class PlayerScript : MonoBehaviour
     private Rigidbody playerRB;
     private Animator playerAnimator;
 
+    public AudioSource WalkSFX;
+    public AudioSource JumpSFX;
+
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody>();
@@ -44,11 +47,31 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        UpdateSound();
+
         if (!(inputVector.magnitude > 0)) moveDir = Vector3.zero;
 
         moveDir = transform.forward * inputVector.y + transform.right * inputVector.x;
         Vector3 movementVec = moveDir * (walkSpeed * Time.deltaTime);
         transform.position += movementVec;
+    }
+
+    void UpdateSound()
+    {
+        if (inputVector.magnitude > 0)
+        {
+            if (!WalkSFX.isPlaying)
+            {
+                WalkSFX.Play();
+            }
+        }
+        else
+        {
+            if (WalkSFX.isPlaying)
+            {
+                WalkSFX.Stop();
+            }
+        }
     }
 
     public void OnMovementAction(InputValue value)
@@ -78,6 +101,7 @@ public class PlayerScript : MonoBehaviour
             playerRB.AddForce((transform.up + moveDir) * jumpForce, ForceMode.Impulse);
             isJumping = value.isPressed;
             playerAnimator.SetBool(isJumpingHash, isJumping);
+            JumpSFX.Play();
         }
     }
 
