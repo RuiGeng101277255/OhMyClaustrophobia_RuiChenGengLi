@@ -1,18 +1,90 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerScript : MonoBehaviour
 {
+    [SerializeField]
+    float walkSpeed = 5.0f;
+    [SerializeField]
+    float jumpForce = 25.0f;
+
+    public float aimSensitivity = 1.0f;
+
+    public readonly int movementXHash = Animator.StringToHash("MoveX");
+    public readonly int movementYHash = Animator.StringToHash("MoveY");
+    public readonly int isCrawlingHash = Animator.StringToHash("isCrawling");
+    public readonly int isMovingHash = Animator.StringToHash("isMoving");
+    public readonly int isJumpingHash = Animator.StringToHash("isJumping");
+
+    private Vector2 inputVector = Vector2.zero;
+    [SerializeField]
+    private Vector3 moveDir = Vector3.zero;
+    private Vector2 lookDir = Vector2.zero;
+
+    private bool isJumping = false;
+    private bool isCrawling = false;
+
+    private Rigidbody playerRB;
+    private Animator playerAnimator;
+    private CapsuleCollider playerCollider;
+
+    private void Awake()
+    {
+        playerRB = GetComponent<Rigidbody>();
+        playerAnimator = GetComponent<Animator>();
+        playerCollider = GetComponent<CapsuleCollider>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (!(inputVector.magnitude > 0)) moveDir = Vector3.zero;
+
+        moveDir = transform.forward * inputVector.y + transform.right * inputVector.x;
+        Vector3 movementVec = moveDir * (walkSpeed * Time.deltaTime);
+        transform.position += movementVec;
+    }
+
+    public void OnMovementAction(InputValue value)
+    {
+        inputVector = value.Get<Vector2>();
+        playerAnimator.SetBool(isMovingHash, (inputVector.magnitude > 0) ? true : false);
+
+        playerAnimator.SetFloat("Blend", inputVector.x + 0.25f);
+    }
+
+    public void OnLook(InputValue value)
+    {
+        lookDir = value.Get<Vector2>();
+        //Animation adjustment for aim direction
+    }
+
+    public void OnCrouch(InputValue value)
+    {
+        isCrawling = value.isPressed;
+        playerAnimator.SetBool(isCrawlingHash, isCrawling);
+    }
+
+    public void OnJump(InputValue value)
+    {
+        if (!isJumping)
+        {
+            playerRB.AddForce((transform.up + moveDir) * jumpForce, ForceMode.Impulse);
+            isJumping = value.isPressed;
+            playerAnimator.SetBool(isJumpingHash, isJumping);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        isJumping = false;
     }
 }
