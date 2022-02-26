@@ -35,8 +35,8 @@ public class PlayerScript : MonoBehaviour
     public AudioSource WalkSFX;
     public AudioSource JumpSFX;
 
-    private bool isGameOver = false;
-    private bool playerWon = false;
+    public bool isGameOver = false;
+    public bool playerWon = false;
 
     private float gameTimeLeft = 60.0f;
 
