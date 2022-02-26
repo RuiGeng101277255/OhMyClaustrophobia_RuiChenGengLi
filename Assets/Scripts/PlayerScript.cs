@@ -8,7 +8,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField]
     float walkSpeed = 5.0f;
     [SerializeField]
-    float jumpForce = 25.0f;
+    float jumpForce = 15.0f;
 
     public float aimSensitivity = 1.0f;
 
@@ -28,13 +28,11 @@ public class PlayerScript : MonoBehaviour
 
     private Rigidbody playerRB;
     private Animator playerAnimator;
-    private CapsuleCollider playerCollider;
 
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody>();
         playerAnimator = GetComponent<Animator>();
-        playerCollider = GetComponent<CapsuleCollider>();
     }
 
     // Start is called before the first frame update
@@ -83,8 +81,9 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    public void SetLanded()
     {
         isJumping = false;
+        playerAnimator.SetBool(isJumpingHash, isJumping);
     }
 }
