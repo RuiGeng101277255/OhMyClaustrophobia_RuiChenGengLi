@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class PlayerScript : MonoBehaviour
 {
+    public TMP_Text m_TimerText;
+
     [SerializeField]
     float walkSpeed = 5.0f;
     [SerializeField]
@@ -32,6 +35,11 @@ public class PlayerScript : MonoBehaviour
     public AudioSource WalkSFX;
     public AudioSource JumpSFX;
 
+    private bool isGameOver = false;
+    private bool playerWon = false;
+
+    private float gameTimeLeft = 60.0f;
+
     private void Awake()
     {
         playerRB = GetComponent<Rigidbody>();
@@ -47,13 +55,25 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateSound();
+        if (!isGameOver)
+        {
+            UpdateSound();
 
-        if (!(inputVector.magnitude > 0)) moveDir = Vector3.zero;
+            if (!(inputVector.magnitude > 0)) moveDir = Vector3.zero;
 
-        moveDir = transform.forward * inputVector.y + transform.right * inputVector.x;
-        Vector3 movementVec = moveDir * (walkSpeed * Time.deltaTime);
-        transform.position += movementVec;
+            moveDir = transform.forward * inputVector.y + transform.right * inputVector.x;
+            Vector3 movementVec = moveDir * (walkSpeed * Time.deltaTime);
+            transform.position += movementVec;
+
+            gameTimeLeft -= Time.deltaTime;
+            m_TimerText.text = "Time Left: " + (int)gameTimeLeft + "s";
+
+            if (gameTimeLeft < 0.0f)
+            {
+                isGameOver = true;
+                playerWon = false;
+            }
+        }
     }
 
     void UpdateSound()
