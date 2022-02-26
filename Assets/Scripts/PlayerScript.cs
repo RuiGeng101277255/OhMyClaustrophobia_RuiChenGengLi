@@ -59,6 +59,28 @@ public class PlayerScript : MonoBehaviour
         {
             UpdateSound();
 
+            transform.rotation *= Quaternion.AngleAxis(lookDir.x * aimSensitivity, Vector3.up);
+            transform.rotation *= Quaternion.AngleAxis(lookDir.y * aimSensitivity, Vector3.left);
+
+            var angles = transform.localEulerAngles;
+            angles.z = 0.0f;
+
+            var angle = transform.localEulerAngles.x;
+
+            if (angle > 180.0f && angle < 300.0f)
+            {
+                angles.x = 300.0f;
+            }
+            else if (angle < 180.0f && angle > 70.0f)
+            {
+                angles.x = 70.0f;
+            }
+
+            transform.localEulerAngles = angles;
+
+            //transform.rotation = Quaternion.Euler(0.0f, transform.rotation.eulerAngles.y, 0.0f);
+            //transform.localEulerAngles = new Vector3(angles.x, 0.0f, 0.0f);
+
             if (!(inputVector.magnitude > 0)) moveDir = Vector3.zero;
 
             moveDir = transform.forward * inputVector.y + transform.right * inputVector.x;
@@ -105,7 +127,6 @@ public class PlayerScript : MonoBehaviour
     public void OnLook(InputValue value)
     {
         lookDir = value.Get<Vector2>();
-        //Animation adjustment for aim direction
     }
 
     public void OnCrouch(InputValue value)
