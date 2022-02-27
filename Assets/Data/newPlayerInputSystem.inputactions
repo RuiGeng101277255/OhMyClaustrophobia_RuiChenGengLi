@@ -52,6 +52,14 @@
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "OpenCage",
+                    "type": "Button",
+                    "id": "92be837b-9db8-41ed-8241-25aaaeb10792",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
                 }
             ],
             "bindings": [
@@ -283,6 +291,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9e04fd40-06de-4a11-9f7a-1c2495d6408a",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OpenCage",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

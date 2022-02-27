@@ -15,6 +15,8 @@ public class PlayerScript : MonoBehaviour
 
     public float aimSensitivity = 1.0f;
 
+    public ButtonScript CageButton;
+
     public readonly int movementXHash = Animator.StringToHash("MoveX");
     public readonly int movementYHash = Animator.StringToHash("MoveY");
     public readonly int isCrawlingHash = Animator.StringToHash("isCrawling");
@@ -144,6 +146,11 @@ public class PlayerScript : MonoBehaviour
             playerAnimator.SetBool(isJumpingHash, isJumping);
             JumpSFX.Play();
         }
+    }
+
+    public void OnOpenCage(InputValue value)
+    {
+        CageButton.OpenCage();
     }
 
     public void SetLanded()

@@ -5,14 +5,14 @@ using TMPro;
 
 public class ButtonScript : MonoBehaviour
 {
-    public Material redButtonMaterial;
-    public Material greenButtonMaterial;
-
     public TMP_Text TextInstruction;
 
     public GameObject CageObject;
 
     public Light ButtonLight;
+
+    public AudioSource ClickSFX;
+    public AudioSource CageHumSFX;
 
     private bool isOpen = false;
     private bool isOverlapping = false;
@@ -24,6 +24,7 @@ public class ButtonScript : MonoBehaviour
     void Start()
     {
         buttonMeshR = GetComponent<MeshRenderer>();
+        buttonMeshR.material.color = Color.red;
     }
 
     // Update is called once per frame
@@ -55,9 +56,23 @@ public class ButtonScript : MonoBehaviour
 
     void UpdateCageRotation()
     {
-        if(!cageOpen)
+        if (isOpen)
         {
+            if (!cageOpen)
+            {
+                if (CageObject.transform.rotation.x < 0.0f)
+                {
+                    CageObject.transform.rotation *= Quaternion.Euler(0.25f, 0.0f, 0.0f);
 
+                    if (!CageHumSFX.isPlaying) CageHumSFX.Play();
+                }
+                else
+                {
+                    cageOpen = true;
+
+                    if (CageHumSFX.isPlaying) CageHumSFX.Stop();
+                }
+            }
         }
     }
 
@@ -70,9 +85,9 @@ public class ButtonScript : MonoBehaviour
                 ButtonLight.color = Color.green;
             }
 
-            if (buttonMeshR.material == redButtonMaterial)
+            if (buttonMeshR.material.color == Color.red)
             {
-                buttonMeshR.material = greenButtonMaterial;
+                buttonMeshR.material.color = Color.green;
             }
         }
         else
@@ -82,10 +97,19 @@ public class ButtonScript : MonoBehaviour
                 ButtonLight.color = Color.red;
             }
 
-            if (buttonMeshR.material == greenButtonMaterial)
+            if (buttonMeshR.material.color == Color.green)
             {
-                buttonMeshR.material = redButtonMaterial;
+                buttonMeshR.material.color = Color.red;
             }
+        }
+    }
+
+    public void OpenCage()
+    {
+        if (isOverlapping)
+        {
+            isOpen = true;
+            ClickSFX.Play();
         }
     }
 
