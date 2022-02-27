@@ -5,10 +5,15 @@ using UnityEngine;
 public class GameStatistics : MonoBehaviour
 {
     private static GameStatistics _instance;
-    public static GameStatistics Instance { get { return _instance; } }
 
     //Game Variables
     private static float FinalGameTimer;
+    private static bool playerWon;
+
+    public static GameStatistics Instance() 
+    { 
+        return _instance; 
+    }
 
     private void Awake()
     {
@@ -35,5 +40,15 @@ public class GameStatistics : MonoBehaviour
     public float getFinalGameTimer()
     {
         return FinalGameTimer;
+    }
+
+    public void setPlayerWon(bool b)
+    {
+        playerWon = b;
+    }
+
+    public bool getPlayerWon()
+    {
+        return playerWon;
     }
 }

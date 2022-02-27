@@ -10,6 +10,8 @@ public class PlayerScript : MonoBehaviour
 
     public GameObject pausePanel;
 
+    public SceneChanger sceneChanger;
+
     [SerializeField]
     float walkSpeed = 5.0f;
     [SerializeField]
@@ -21,7 +23,6 @@ public class PlayerScript : MonoBehaviour
 
     public readonly int movementXHash = Animator.StringToHash("MoveX");
     public readonly int movementYHash = Animator.StringToHash("MoveY");
-    public readonly int isCrawlingHash = Animator.StringToHash("isCrawling");
     public readonly int isMovingHash = Animator.StringToHash("isMoving");
     public readonly int isJumpingHash = Animator.StringToHash("isJumping");
 
@@ -103,6 +104,13 @@ public class PlayerScript : MonoBehaviour
                     playerWon = false;
                 }
             }
+            else
+            {
+                Cursor.visible = true;
+                GameStatistics.Instance().setFinalGameTimer(gameTimeLeft);
+                GameStatistics.Instance().setPlayerWon(playerWon);
+                sceneChanger.OpenSpecificScene("GameOver");
+            }
         }
     }
 
@@ -133,26 +141,23 @@ public class PlayerScript : MonoBehaviour
 
     public void OnMovementAction(InputValue value)
     {
-        inputVector = value.Get<Vector2>();
-        playerAnimator.SetBool(isMovingHash, (inputVector.magnitude > 0) ? true : false);
+        if (!isGamePaused)
+        {
+            inputVector = value.Get<Vector2>();
+            playerAnimator.SetBool(isMovingHash, (inputVector.magnitude > 0) ? true : false);
 
-        playerAnimator.SetFloat("Blend", inputVector.x + 0.25f);
+            playerAnimator.SetFloat("Blend", inputVector.x + 0.25f);
+        }
     }
 
     public void OnLook(InputValue value)
     {
-        lookDir = value.Get<Vector2>();
-    }
-
-    public void OnCrouch(InputValue value)
-    {
-        isCrawling = value.isPressed;
-        playerAnimator.SetBool(isCrawlingHash, isCrawling);
+        if (!isGamePaused) lookDir = value.Get<Vector2>();
     }
 
     public void OnJump(InputValue value)
     {
-        if (!isJumping)
+        if (!isJumping && !isGamePaused)
         {
             playerRB.AddForce((transform.up + moveDir) * jumpForce, ForceMode.Impulse);
             isJumping = value.isPressed;
@@ -163,7 +168,7 @@ public class PlayerScript : MonoBehaviour
 
     public void OnOpenCage(InputValue value)
     {
-        CageButton.OpenCage();
+        if (!isGamePaused) CageButton.OpenCage();
     }
 
     public void OnPauseGame(InputValue value)
