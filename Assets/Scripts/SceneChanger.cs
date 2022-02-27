@@ -16,16 +16,4 @@ public class SceneChanger : MonoBehaviour
             Application.Quit();
         }
     }
-
-    public void OpenClosePauseScene(bool open)
-    {
-        if (open)
-        {
-            SceneManager.LoadScene("PauseMenu", LoadSceneMode.Additive);
-        }
-        else
-        {
-            SceneManager.UnloadSceneAsync("PauseMenu");
-        }
-    }
 }

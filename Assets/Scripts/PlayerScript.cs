@@ -8,6 +8,8 @@ public class PlayerScript : MonoBehaviour
 {
     public TMP_Text m_TimerText;
 
+    public GameObject pausePanel;
+
     [SerializeField]
     float walkSpeed = 5.0f;
     [SerializeField]
@@ -41,6 +43,7 @@ public class PlayerScript : MonoBehaviour
     public bool playerWon = false;
 
     private float gameTimeLeft = 60.0f;
+    private bool isGamePaused = false;
 
     private void Awake()
     {
@@ -57,45 +60,48 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isGameOver)
+        if (!isGamePaused)
         {
-            UpdateSound();
-
-            transform.rotation *= Quaternion.AngleAxis(lookDir.x * aimSensitivity, Vector3.up);
-            transform.rotation *= Quaternion.AngleAxis(lookDir.y * aimSensitivity, Vector3.left);
-
-            var angles = transform.localEulerAngles;
-            angles.z = 0.0f;
-
-            var angle = transform.localEulerAngles.x;
-
-            if (angle > 180.0f && angle < 300.0f)
+            if (!isGameOver)
             {
-                angles.x = 300.0f;
-            }
-            else if (angle < 180.0f && angle > 70.0f)
-            {
-                angles.x = 70.0f;
-            }
+                UpdateSound();
 
-            transform.localEulerAngles = angles;
+                transform.rotation *= Quaternion.AngleAxis(lookDir.x * aimSensitivity, Vector3.up);
+                transform.rotation *= Quaternion.AngleAxis(lookDir.y * aimSensitivity, Vector3.left);
 
-            //transform.rotation = Quaternion.Euler(0.0f, transform.rotation.eulerAngles.y, 0.0f);
-            //transform.localEulerAngles = new Vector3(angles.x, 0.0f, 0.0f);
+                var angles = transform.localEulerAngles;
+                angles.z = 0.0f;
 
-            if (!(inputVector.magnitude > 0)) moveDir = Vector3.zero;
+                var angle = transform.localEulerAngles.x;
 
-            moveDir = transform.forward * inputVector.y + transform.right * inputVector.x;
-            Vector3 movementVec = moveDir * (walkSpeed * Time.deltaTime);
-            transform.position += movementVec;
+                if (angle > 180.0f && angle < 300.0f)
+                {
+                    angles.x = 300.0f;
+                }
+                else if (angle < 180.0f && angle > 70.0f)
+                {
+                    angles.x = 70.0f;
+                }
 
-            gameTimeLeft -= Time.deltaTime;
-            m_TimerText.text = "Time Left: " + (int)gameTimeLeft + "s";
+                transform.localEulerAngles = angles;
 
-            if (gameTimeLeft < 0.0f)
-            {
-                isGameOver = true;
-                playerWon = false;
+                //transform.rotation = Quaternion.Euler(0.0f, transform.rotation.eulerAngles.y, 0.0f);
+                //transform.localEulerAngles = new Vector3(angles.x, 0.0f, 0.0f);
+
+                if (!(inputVector.magnitude > 0)) moveDir = Vector3.zero;
+
+                moveDir = transform.forward * inputVector.y + transform.right * inputVector.x;
+                Vector3 movementVec = moveDir * (walkSpeed * Time.deltaTime);
+                transform.position += movementVec;
+
+                gameTimeLeft -= Time.deltaTime;
+                m_TimerText.text = "Time Left: " + (int)gameTimeLeft + "s";
+
+                if (gameTimeLeft < 0.0f)
+                {
+                    isGameOver = true;
+                    playerWon = false;
+                }
             }
         }
     }
@@ -116,6 +122,13 @@ public class PlayerScript : MonoBehaviour
                 WalkSFX.Stop();
             }
         }
+    }
+
+    public void PauseGame()
+    {
+        isGamePaused = !isGamePaused;
+        Cursor.visible = isGamePaused;
+        pausePanel.SetActive(isGamePaused);
     }
 
     public void OnMovementAction(InputValue value)
@@ -151,6 +164,11 @@ public class PlayerScript : MonoBehaviour
     public void OnOpenCage(InputValue value)
     {
         CageButton.OpenCage();
+    }
+
+    public void OnPauseGame(InputValue value)
+    {
+        PauseGame();
     }
 
     public void SetLanded()
